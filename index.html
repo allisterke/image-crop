@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Crop</title>
+
+    <script src="jquery-3.1.1.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap.min.js"></script>
+
+    <script src="crop.js"></script>
+
+    <style>
+        .selected-button {
+            background-color: gray;
+        }
+    </style>
+</head>
+<body style="height: 100vh; display: flex; margin: 0; align-items: center; justify-content: center;">
+
+<div id="upload-container" class="panel panel-default col-lg-8 col-md-8 col-sm-8">
+    <div class="panel-heading">Select an image to extract elements:</div>
+    <div class="panel-body">
+        <div class="input-group" style="margin: auto;">
+            <input id="file-upload-input" type="file" accept="image/*">
+            <span class="input-group-btn">
+                <button id="submit-upload-file" type="button" class="btn btn-default" >Upload</button>
+            </span>
+            <script>
+                window.addEventListener('load', function() {
+                    document.getElementById("submit-upload-file").addEventListener("click", function () {
+
+                        var files = document.getElementById("file-upload-input").files;
+                        if(files.length == 0) {
+                            alert("Please select an image");
+                            return;
+                        }
+
+                        var formData = new FormData();
+                        formData.append("file", files[0]);
+
+                        $.ajax({
+//                            url: '/guess.html', // TODO: upload url
+                            url: window.img_server + '/m/upload',
+                            type: "POST",
+                            data: formData,
+//                            dataType: 'text',
+                            processData: false,
+                            contentType: false,
+                            crossDomain: true,
+                            success: function (data, status, jqxhr) {
+//                                alert(data);
+                                // TODO: change ui, and start extract
+
+                                document.getElementById("upload-container").style.display = "none";
+                                document.getElementById("image-editor-container").style.display = "block";
+
+                                var ie = new ImageEditor();
+                                ie.init(data);
+                            },
+                            error: function (jqxhr, status, error) {
+//                                alert('status: ' + status + '\n' + 'error: ' + error);
+                            }
+                        });
+//                                .always(function () {
+//                            document.getElementById("upload-container").style.display = "none";
+//                            document.getElementById("image-editor-container").style.display = "block";
+//
+//                            var ie = new ImageEditor();
+//                            ie.init();
+//                        });
+                    });
+                })
+            </script>
+        </div>
+    </div>
+</div>
+
+<div id="image-editor-container" style="display: none;">
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+        <nav class="navbar navbar-fixed-bottom col-lg-3 col-md-3 col-sm-3 col-xs-3">
+            <div class="btn-group-vertical" role="group">
+                <button type="button" class="btn btn-default" aria-label="Left Align" id="cancel-button">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+
+                <hr>
+
+                <button type="button" class="btn btn-default" aria-label="Left Align" id="backward-button">
+                    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                </button>
+
+                <!--<hr>-->
+                <br>
+
+                <button type="button" class="btn btn-default" id="rectangle-button">Draw Rectangle Region</button>
+                <button type="button" class="btn btn-default" id="revert-rectangle-button">Revert Rectangle Region</button>
+
+                <br>
+
+                <button type="button" class="btn btn-default" id="forground-line-button">Draw Forground Line</button>
+                <button type="button" class="btn btn-default" id="revert-one-forground-line-button">Revert One Forground Line</button>
+                <button type="button" class="btn btn-default" id="revert-all-forground-lines-button">Revert All Forground Lines</button>
+
+                <br>
+
+                <button type="button" class="btn btn-default" id="background-line-button">Draw Background Line</button>
+                <button type="button" class="btn btn-default" id="revert-one-background-line-button">Revert One Background Line</button>
+                <button type="button" class="btn btn-default" id="revert-all-background-lines-button">Revert All Background Lines</button>
+
+                <!--<hr>-->
+
+                <!--<button type="button" class="btn btn-default" id="revert-all-lines-button">Revert All Lines</button>-->
+
+                <br>
+
+                <div class="input-group">
+                    <label class="input-group-addon">Iterate Times:</label>
+                    <input id="iterate-times-input" type="text" class="form-control" placeholder="1" value="1" width="10px">
+                </div>
+
+                <button type="button" class="btn btn-default" id="process-button">Do as I Instructed</button>
+
+                <button type="button" class="btn btn-default" id="submit-picture-button">Submit Picture</button>
+                <!--<br><br>-->
+            </div>
+        </nav>
+    </div>
+
+    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+        <div style="text-align: center;">
+            <div id="canvas-container" style="margin: 0 auto; display: block; padding: 0; border: solid 1px;">
+                <canvas id="image-editor"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
