@@ -1,0 +1,57 @@
+/*body{*/
+    /*background-color: lavender;*/
+    /*font-family: Georgia, "Times New Roman", Times, serif;*/
+    /*font-size: large;*/
+    /*margin: 0px;*/
+/*}*/
+
+header.top{
+    background-color: aliceblue;
+    margin: 20px 20px 0px 20px;
+    height: 108px;
+}
+
+header.top img#head{
+    float: left;
+}
+
+div#tableContainer {
+    display: table;
+    border-spacing: 20px;
+}
+
+div#tableRow {
+    display: table-row;
+}
+
+section#image{
+    display: table-cell;
+    background-color: aliceblue;
+    width: 20%;
+    padding: 20px;
+    vertical-align: top;
+}
+
+.pre_img{
+    text-align: center;
+}
+
+.tags{
+    border: 0px;
+    text-align: center;
+}
+
+.element_tags{
+    border: 0px;
+}
+
+.style_tags{
+    border: 0px;
+}
+
+aside{
+    display: table-cell;
+    background-color: aliceblue;
+    padding: 20px;
+    vertical-align: top;
+}

@@ -250,7 +250,8 @@ function ImageEditor() {
             }
 
             var formData = new FormData();
-            formData.append('img_name', this.imageStack[this.imageStack.length - 1].img_name);
+            // formData.append('img_name', this.imageStack[this.imageStack.length - 1].img_name);
+            formData.append('img_name', this.imageStack[0].img_name);
 
             if(this.foregroundLineStack.length == 0) {
                 var p = this.getRectanglePosition();
@@ -299,38 +300,51 @@ function ImageEditor() {
 
     this.bindBackwardButtonEventListener = function () {
         this.backwardButton.addEventListener('click', function (e) {
-            alert('not implemented yet'); // TODO: backward
-        })
+            this.imageStack.pop();
+            this.foregroundLineStack.pop();
+            this.backgroundLineStack.pop();
+            this.maskStack.pop();
+
+            this.refreshUI();
+        }.bind(this))
     };
 
     this.bindSubmitPictureButtonEventListener = function () {
         this.submitButton.addEventListener('click', function (e) {
-            var formData = new FormData();
-            formData.append('img_name', this.imageStack[this.imageStack.length - 1].img_name);
 
-            var p = this.getRectanglePosition();
-            formData.append('x', p[0]);
-            formData.append('y', p[1]);
-            formData.append('width', p[2]);
-            formData.append('height', p[3]);
-            formData.append('tags', 'tag1,tag2,tag3'); // TODO: tags
+            $('#tag-model-container').modal('toggle');
 
-            $.ajax({
-                url: window.img_server + '/m/save',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                crossDomain: true,
-                success: function (data, status, jqxhr) {
-                    alert('picture saved');
-                    window.location.reload(true);
-                }.bind(this),
-                error: function (jqxhr, status, error) {
-                    alert('status: ' + status + '\n' + 'error: ' + error);
-                }
-            })
         }.bind(this));
+    };
+
+    this.submitTags = function (tags) {
+
+        var formData = new FormData();
+        formData.append('img_name', this.imageStack[this.imageStack.length - 1].img_name);
+
+        var p = this.getRectanglePosition();
+        formData.append('x', p[0]);
+        formData.append('y', p[1]);
+        formData.append('width', p[2]);
+        formData.append('height', p[3]);
+        formData.append('mask', this.maskStack[this.maskStack.length -1]);
+        formData.append('tags', tags);
+
+        $.ajax({
+            url: window.img_server + '/m/save',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (data, status, jqxhr) {
+                alert('picture saved');
+                window.location.reload(true);
+            }.bind(this),
+            error: function (jqxhr, status, error) {
+                alert('status: ' + status + '\n' + 'error: ' + error);
+            }
+        })
     }
 
     // refresh ui & canvas
@@ -433,6 +447,8 @@ function ImageEditor() {
     };
 
     this.bindButtonEventListeners = function () {
+        this.bindBackwardButtonEventListener();
+
         this.bindCancelButtonEventListener();
         this.bindRectangleButtonEventListener();
 

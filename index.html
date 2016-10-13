@@ -10,6 +10,9 @@
 
     <script src="crop.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="tag_mark.css">
+    <script type="text/javascript" src="functions.js"></script>
+
     <style>
         .selected-button {
             background-color: gray;
@@ -21,6 +24,41 @@
 <div id="upload-container" class="panel panel-default col-lg-8 col-md-8 col-sm-8">
     <div class="panel-heading">Select an image to extract elements:</div>
     <div class="panel-body">
+        <button id="show-all" type="button" class="btn btn-default" >Show All Images</button>
+        <hr>
+        <script>
+            $(function () {
+                $('#show-all').click(function (e) {
+
+                    var formData = new FormData();
+                    formData.append("page", 1);
+                    formData.append("count", 20);
+
+                    $.ajax({
+                        url: window.img_server + '/m/showall',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        crossDomain: true,
+                        success: function (data, status, jqxhr) {
+                            content = '';
+                            for(var i = data.imgs.length - 1; i >= 0; -- i) {
+                                content += '<div><img src="' + window.img_server + data.imgs[i] + '">';
+                                content += '<p>Tags: ' + data.data[i].tags + '</p>';
+                                content += '</div>'
+                            }
+                            $('#all-images-container').html(content);
+                            $('#all-images-container-modal').modal('toggle');
+                        },
+                        error: function (jqxhr, status, error) {
+                            alert('status: ' + status + '\n' + 'error: ' + error);
+                        }
+                    });
+                })
+            });
+        </script>
+
         <div class="input-group" style="margin: auto;">
             <input id="file-upload-input" type="file" accept="image/*">
             <span class="input-group-btn">
@@ -55,8 +93,8 @@
                                 document.getElementById("upload-container").style.display = "none";
                                 document.getElementById("image-editor-container").style.display = "block";
 
-                                var ie = new ImageEditor();
-                                ie.init(data);
+                                window.ie = new ImageEditor();
+                                window.ie.init(data);
                             },
                             error: function (jqxhr, status, error) {
 //                                alert('status: ' + status + '\n' + 'error: ' + error);
@@ -132,6 +170,110 @@
             <div id="canvas-container" style="margin: 0 auto; display: block; padding: 0; border: solid 1px;">
                 <canvas id="image-editor"></canvas>
             </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="all-images-container-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">All Images</h4>
+            </div>
+            <div id="all-images-container" class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tag-model-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <header class="top">
+                    <img id="head" src="head.png"/>
+                </header>
+            </div>
+            <div class="modal-body">
+                <div id="tableContainer">
+                    <div id="tableRow">
+                        <!--<section id="image">-->
+                            <!--<p class="pre_img">-->
+                                <!--<img id="img1" src="images/IMG_2288.JPG" />-->
+                                <!--&lt;!&ndash; <img id="img1" src="images/IMG_2288.JPG" onload="DrawImage(this);"/> &ndash;&gt;-->
+                                <!--&lt;!&ndash;<input type="button" value="OK" onclick="next();">&ndash;&gt;-->
+                            <!--</p>-->
+                        <!--</section>-->
+
+                        <aside>
+                            <blockquote class="tags">
+                                <blockquote class="element_tags">
+                                    <p>Choose the element tags: </p>
+                                    <input type="checkbox" name="element" id="element0" value="动物" />动物
+                                    <input type="checkbox" name="element" id="element1" value="皮毛" />皮毛
+                                    <input type="checkbox" name="element" id="element2" value="植物" />植物
+                                    <input type="checkbox" name="element" id="element3" value="花卉" />花卉
+                                    <input type="checkbox" name="element" id="element4" value="人物" />人物
+                                    <input type="checkbox" name="element" id="element5" value="服饰" />服饰
+                                    <input type="checkbox" name="element" id="element6" value="风景" />风景
+                                    <input type="checkbox" name="element" id="element7" value="建筑" />建筑
+                                    <input type="checkbox" name="element" id="element8" value="食物" />食物
+                                    <input type="checkbox" name="element" id="element9" value="工具" />工具
+                                    <input type="checkbox" name="element" id="element10" value="动漫" />动漫
+                                    <input type="checkbox" name="element" id="element11" value="三维" />三维
+                                    <input type="checkbox" name="element" id="element12" value="几何" />几何
+                                    <input type="checkbox" name="element" id="element13" value="图形" />图形
+                                    <input type="checkbox" name="element" id="element14" value="图标" />图标
+                                    <input type="checkbox" name="element" id="element15" value="线条" />线条
+                                    <input type="checkbox" name="element" id="element16" value="抽象" />抽象
+                                    <input type="checkbox" name="element" id="element17" value="水墨" />水墨
+                                    <input type="checkbox" name="element" id="element18" value="油画" />油画
+                                    <input type="checkbox" name="element" id="element19" value="素描" />素描
+                                    <input type="checkbox" name="element" id="element20" value="抽象" />抽象
+                                    <input type="checkbox" name="element" id="element21" value="文字" />文字
+                                    <input type="checkbox" name="element" id="element22" value="涂鸦" />涂鸦
+                                    <input type="checkbox" name="element" id="element23" value="晕染" />晕染
+                                    <input type="checkbox" name="element" id="element24" value="肌理" />肌理
+                                    <input type="checkbox" name="element" id="others1" value="自定义" />自定义
+                                    <input type="text" name="text" id="text1" readonly="true" onclick="writeTag1()"/>
+                                </blockquote>
+
+                                <blockquote class="style_tags">
+                                    <p>Choose the style tags: </p>
+                                    <input type="checkbox" name="style" id="style0" value="清新风" />清新风
+                                    <input type="checkbox" name="style" id="style1" value="复古风" />复古风
+                                    <input type="checkbox" name="style" id="style2" value="休闲风" />休闲风
+                                    <input type="checkbox" name="style" id="style3" value="艺术风" />艺术风
+                                    <input type="checkbox" name="style" id="style4" value="科技风" />科技风
+                                    <input type="checkbox" name="style" id="style5" value="田园风" />田园风
+                                    <input type="checkbox" name="style" id="style6" value="民族风" />民族风
+                                    <input type="checkbox" name="style" id="style7" value="中国风" />中国风
+                                    <input type="checkbox" name="style" id="style8" value="欧美风" />欧美风
+                                    <input type="checkbox" name="style" id="style9" value="和风" />和风
+                                    <input type="checkbox" name="style" id="style10" value="波西米亚风" />波西米亚风
+                                    <input type="checkbox" name="style" id="style11" value="哥特风" />哥特风
+                                    <input type="checkbox" name="style" id="style12" value="学院风" />学院风
+                                    <input type="checkbox" name="style" id="style13" value="朋克风" />朋克风
+                                    <input type="checkbox" name="style" id="style14" value="简约风" />简约风
+                                    <input type="checkbox" name="style" id="style15" value="动漫风" />动漫风
+                                    <input type="checkbox" name="style" id="others2" value="自定义" />自定义
+                                    <input type="text" name="text" id="text2" readonly="true" onclick="writeTag2()"/>
+                                </blockquote>
+
+                                <p>
+                                    <!--<input type="button" name="button" id="download" onclick="download_image()" value="Download" />-->
+                                    <input type="button" name="button" id="ok" onclick="checkBox()" value="OK"/>
+                                </p>
+                            </blockquote>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="modal-footer">-->
+            <!--</div>-->
         </div>
     </div>
 
