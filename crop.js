@@ -235,7 +235,8 @@ function ImageEditor() {
             if(this.foregroundLineStack.length == 0) { // on selecting rectangle region stage
 
                 if(this.rectangle == null) {
-                    alert('You have not select a rectangular region to process!!!');
+                    // alert('You have not select a rectangular region to process!!!');
+                    alert('请用鼠标选择矩形区域再点击处理图片');
                     return;
                 }
             }
@@ -244,7 +245,8 @@ function ImageEditor() {
                 var backLines = this.backgroundLineStack[this.backgroundLineStack.length - 1];
 
                 if(foreLines.length == 0 && backLines.length == 0) {
-                    alert('You have not draw any foreground or background line');
+                    // alert('You have not draw any foreground or background line');
+                    alert('请描绘一些前景线或背景线后再点击处理图片');
                     return;
                 }
             }
@@ -281,6 +283,7 @@ function ImageEditor() {
                 data: formData,
                 processData: false,
                 contentType: false,
+                cache: false,
                 crossDomain: true,
                 success: function (data, status, jqxhr) {
                     // alert(data.mask.length);
@@ -336,9 +339,11 @@ function ImageEditor() {
             data: formData,
             processData: false,
             contentType: false,
+            cache: false,
             crossDomain: true,
             success: function (data, status, jqxhr) {
-                alert('picture saved');
+                // alert('picture saved');
+                alert('素材保存成功');
                 window.location.reload(true);
             }.bind(this),
             error: function (jqxhr, status, error) {
@@ -396,6 +401,9 @@ function ImageEditor() {
         var img = new Image();
 
         img.onload = function () {
+            $('#canvas-bg-container').css("width", img.width + 'px');
+            $('#canvas-bg-container').css("height", img.height + 'px');
+
             this.container.style.backgroundImage = "url('" + img.src + "')"
             this.container.style.width = img.width + 'px'
             this.container.style.height = img.height + 'px' // does not work properly without 'px'

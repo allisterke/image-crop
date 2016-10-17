@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Image Crop</title>
+    <title>素材抠图</title>
 
     <script src="jquery-3.1.1.min.js"></script>
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -19,12 +19,12 @@
         }
     </style>
 </head>
-<body style="height: 100vh; display: flex; margin: 0; align-items: center; justify-content: center;">
+<body style="height: 100vh; display: flex; margin: 0; align-items: center; justify-content: center; ">
 
 <div id="upload-container" class="panel panel-default col-lg-8 col-md-8 col-sm-8">
-    <div class="panel-heading">Select an image to extract elements:</div>
+    <div class="panel-heading">选择一张图片:</div>
     <div class="panel-body">
-        <button id="show-all" type="button" class="btn btn-default" >Show All Images</button>
+        <button id="show-all" type="button" class="btn btn-default" >显示已有素材</button>
         <hr>
         <script>
             $(function () {
@@ -33,6 +33,7 @@
                     var formData = new FormData();
                     formData.append("page", 1);
                     formData.append("count", 20);
+                    formData.append("reverse", 1);
 
                     $.ajax({
                         url: window.img_server + '/m/showall',
@@ -40,10 +41,12 @@
                         data: formData,
                         processData: false,
                         contentType: false,
+                        cache: false,
                         crossDomain: true,
                         success: function (data, status, jqxhr) {
                             content = '';
-                            for(var i = data.imgs.length - 1; i >= 0; -- i) {
+//                            for(var i = data.imgs.length - 1; i >= 0; -- i) {
+                            for(var i = 0; i < data.imgs.length; ++ i) {
                                 content += '<div><img src="' + window.img_server + data.imgs[i] + '">';
                                 content += '<p>Tags: ' + data.data[i].tags + '</p>';
                                 content += '</div>'
@@ -62,7 +65,7 @@
         <div class="input-group" style="margin: auto;">
             <input id="file-upload-input" type="file" accept="image/*">
             <span class="input-group-btn">
-                <button id="submit-upload-file" type="button" class="btn btn-default" >Upload</button>
+                <button id="submit-upload-file" type="button" class="btn btn-default" >上传</button>
             </span>
             <script>
                 window.addEventListener('load', function() {
@@ -85,6 +88,7 @@
 //                            dataType: 'text',
                             processData: false,
                             contentType: false,
+                            cache: false,
                             crossDomain: true,
                             success: function (data, status, jqxhr) {
 //                                alert(data);
@@ -131,20 +135,20 @@
                 <!--<hr>-->
                 <br>
 
-                <button type="button" class="btn btn-default" id="rectangle-button">Draw Rectangle Region</button>
-                <button type="button" class="btn btn-default" id="revert-rectangle-button">Revert Rectangle Region</button>
+                <button type="button" class="btn btn-default" id="rectangle-button">选择矩形区域</button>
+                <button type="button" class="btn btn-default" id="revert-rectangle-button">取消选择矩形区域</button>
 
                 <br>
 
-                <button type="button" class="btn btn-default" id="forground-line-button">Draw Forground Line</button>
-                <button type="button" class="btn btn-default" id="revert-one-forground-line-button">Revert One Forground Line</button>
-                <button type="button" class="btn btn-default" id="revert-all-forground-lines-button">Revert All Forground Lines</button>
+                <button type="button" class="btn btn-default" id="forground-line-button">描绘前景线</button>
+                <button type="button" class="btn btn-default" id="revert-one-forground-line-button">取消一条前景线</button>
+                <button type="button" class="btn btn-default" id="revert-all-forground-lines-button">取消全部前景线</button>
 
                 <br>
 
-                <button type="button" class="btn btn-default" id="background-line-button">Draw Background Line</button>
-                <button type="button" class="btn btn-default" id="revert-one-background-line-button">Revert One Background Line</button>
-                <button type="button" class="btn btn-default" id="revert-all-background-lines-button">Revert All Background Lines</button>
+                <button type="button" class="btn btn-default" id="background-line-button">描绘背景线</button>
+                <button type="button" class="btn btn-default" id="revert-one-background-line-button">取消一条背景线</button>
+                <button type="button" class="btn btn-default" id="revert-all-background-lines-button">取消全部背景线</button>
 
                 <!--<hr>-->
 
@@ -153,20 +157,20 @@
                 <br>
 
                 <div class="input-group">
-                    <label class="input-group-addon">Iterate Times:</label>
+                    <label class="input-group-addon">迭代次数:</label>
                     <input id="iterate-times-input" type="text" class="form-control" placeholder="1" value="1" width="10px">
                 </div>
 
-                <button type="button" class="btn btn-default" id="process-button">Do as I Instructed</button>
+                <button type="button" class="btn btn-default" id="process-button">处理图片</button>
 
-                <button type="button" class="btn btn-default" id="submit-picture-button">Submit Picture</button>
+                <button type="button" class="btn btn-default" id="submit-picture-button">提交素材</button>
                 <!--<br><br>-->
             </div>
         </nav>
     </div>
 
     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-        <div style="text-align: center;">
+        <div id="canvas-bg-container" style="text-align: center; background-image: url('bg.png');">
             <div id="canvas-container" style="margin: 0 auto; display: block; padding: 0; border: solid 1px;">
                 <canvas id="image-editor"></canvas>
             </div>
@@ -180,7 +184,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">All Images</h4>
+                <h4 class="modal-title">所有素材</h4>
             </div>
             <div id="all-images-container" class="modal-body">
             </div>
