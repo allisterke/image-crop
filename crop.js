@@ -539,6 +539,9 @@ function ImageEditor() {
             if(shape !== null) {
                 shape.x1 = startX
                 shape.y1 = startY // last shape in not complete
+
+                shape.x2 = startX
+                shape.y2 = startY // last shape in not complete
             }
             else {
                 // abnormal
